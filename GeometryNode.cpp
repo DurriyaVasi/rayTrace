@@ -29,13 +29,16 @@ void GeometryNode::setMaterial( Material *mat )
 Intersect GeometryNode::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
         Intersect i = m_primitive->intersect(rayDir, rayPos);
 	Intersect i2 = SceneNode::intersect(rayDir, rayPos);
-	if (i.hit && !i2.hit) {
+	if (!i.hit && !i2.hit) {
+		return Intersect();
+	}
+	else if (i.hit && !i2.hit) {
 		return i;
 	}
-	if (i2.hit && !i.hit) {
+	else if (i2.hit && !i.hit) {
 		return i2;
 	}
-	else {
+	else if (i.hit && i2.hit) {
 		if (i.t < i2.t) {
 			return i;
 		}

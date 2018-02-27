@@ -52,9 +52,9 @@ public:
 	std::string m_name;
 	unsigned int m_nodeId;
 
+	virtual Intersect intersect(glm::vec3 rayDir, glm::vec3 rayPos);
+
 private:
 	// The number of SceneNode instances.
 	static unsigned int nodeInstanceCount;
-
-     virtual Intersect intersect(glm::vec3 rayDir, glm::vec3 rayPos);
 };

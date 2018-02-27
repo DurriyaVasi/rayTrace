@@ -41,8 +41,8 @@ void A4_Render(
 	size_t w = image.width();
 
 	glm::vec3 camDir = glm::normalize(view); //w
-        glm::vec3 camRight = glm::normalize(glm::cross(up, w)); //u
-        glm::vec3 camUp = glm::cross(w, u); //v
+        glm::vec3 camRight = glm::normalize(glm::cross(up, camDir)); //u
+        glm::vec3 camUp = glm::cross(camDir, camRight); //v
 	glm::vec3 lookAt = view + eye;
 	float initZ = lookAt[2];
 	fovy = glm::radians(fovy);
@@ -53,12 +53,11 @@ void A4_Render(
 
 	for (uint y = 0; y < h; ++y) {
 		for (uint x = 0; x < w; ++x) {
-			glm::vec3 screenPoint = vec3((float)x, (float)y, initZ)
-			
+			glm::vec3 screenPoint = glm::vec3((float)x, (float)y, initZ);
 			glm::vec3 rayPos = eye;
-			glm::vec3 rayDir = getRayDir(eye, w, h, wWindow, hWindow, camRight, camUp, camDir);
+			glm::vec3 rayDir = getRayDir(eye, screenPoint,w, h, wWindow, hWindow, camRight, camUp, camDir);
 			
-			Intersect = root->intersect(rayDir, rayPos);
+			Intersect intersect = root->intersect(rayDir, rayPos);
 			
 			if (!intersect.hit) {
 				// Red: increasing from top to bottom
@@ -70,6 +69,7 @@ void A4_Render(
 						  || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;
 			}
 			else {
+				std::cout << "Here" << std::endl;
 				image(x, y, 0) = 1;
 				image(x, y, 1) = 1;
 				image(x, y, 2) = 1;
