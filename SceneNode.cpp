@@ -134,3 +134,28 @@ std::ostream & operator << (std::ostream & os, const SceneNode & node) {
 	os << "]\n";
 	return os;
 }
+
+Intersect SceneNode::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
+	bool hit = false;
+	glm::vec3 pos = glm::vec3(0, 0, 0);
+	glm::vec3 n = glm::vec3(0, 0, 0);
+	double t = 0;
+	for(std::list<SceneNode*>::iterator it = children.begin(); it != children.end(); ++it) {
+		Intersect i = *it->intersect(rayDir, rayPos);
+		if (i.hit && !hit) {
+			hit = true;
+			pos = i.pos;
+			n = i.n;
+			t = i.t;
+		}
+		else if (i.hit && hit && i.t < t) {
+			pos = i.pos;
+			n = i.n;
+			t = i.t;
+		}
+	}
+	return Intersect(pos, n, hit, t);
+}
+				
+			
+}

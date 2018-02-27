@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Material.hpp"
+#include "intersect.cpp"
 
 #include <glm/glm.hpp>
 
@@ -54,4 +55,6 @@ public:
 private:
 	// The number of SceneNode instances.
 	static unsigned int nodeInstanceCount;
+
+     virtual Intersect intersect(glm::vec3 rayDir, glm::vec3 rayPos);
 };

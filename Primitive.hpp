@@ -2,9 +2,12 @@
 
 #include <glm/glm.hpp>
 
+#include "intersect.cpp"
+
 class Primitive {
 public:
   virtual ~Primitive();
+  virtual Intersect intersect(glm::vec3 rayDir, glm::vec3 rayPos);
 };
 
 class Sphere : public Primitive {
@@ -24,6 +27,7 @@ public:
   {
   }
   virtual ~NonhierSphere();
+  virtual Intersect intersect(glm::vec3 rayDir, glm::vec3 rayPos);
 
 private:
   glm::vec3 m_pos;

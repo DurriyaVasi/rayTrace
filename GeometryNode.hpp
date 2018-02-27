@@ -3,6 +3,7 @@
 #include "SceneNode.hpp"
 #include "Primitive.hpp"
 #include "Material.hpp"
+#include "intersect.cpp"
 
 class GeometryNode : public SceneNode {
 public:
@@ -13,4 +14,5 @@ public:
 
 	Material *m_material;
 	Primitive *m_primitive;
+	virtual Intersect intersect(glm::vec3 rayDir, glm::vec3 rayPos);
 };
