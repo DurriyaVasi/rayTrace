@@ -48,15 +48,19 @@ void A4_Render(
 	fovy = glm::radians(fovy);
 	//fovx = fovx * (w / h);
 	float distance = glm::length(view);
-	double hWindow = 2 * distance * tan(fovy/2);
-	double wWindow = (w/h) * hWindow;
+	float hWindow = 2 * distance * glm::tan(fovy/2);
+	float wWindow = ((float)w/(float)h) * hWindow;
 
 	for (uint y = 0; y < h; ++y) {
 		for (uint x = 0; x < w; ++x) {
-			glm::vec3 screenPoint = glm::vec3((float)x, (float)y, initZ);
+			glm::vec3 screenPoint = glm::vec3((float)x, (float)y, distance);
 			glm::vec3 rayPos = eye;
-			glm::vec3 rayDir = getRayDir(eye, screenPoint,w, h, wWindow, hWindow, camRight, camUp, camDir);
+			glm::vec3 rayDir = getRayDir(eye, screenPoint, (float)w, (float)h, wWindow, hWindow, camRight, camUp, camDir);
 			
+			if ((x == 0 && y == 0) || (x == 255 && y == 255)) { 
+				//std::cout << glm::to_string(eye) << " " << glm::to_string(screenPoint) << " " << w << " " << h << " " << wWindow << " " << hWindow << " " << glm::to_string(camRight) << " " << glm::to_string(camUp) << " " << glm::to_string(camDir) << std::endl;
+				//std::cout << glm::to_string(rayPos) << " " << glm::to_string(rayDir) << std::endl;
+}
 			Intersect intersect = root->intersect(rayDir, rayPos);
 			
 			if (!intersect.hit) {
@@ -69,7 +73,7 @@ void A4_Render(
 						  || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;
 			}
 			else {
-				std::cout << "Here" << std::endl;
+			//	std::cout << "Here" << std::endl;
 				image(x, y, 0) = 1;
 				image(x, y, 1) = 1;
 				image(x, y, 2) = 1;
