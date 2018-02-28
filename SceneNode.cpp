@@ -140,6 +140,9 @@ Intersect SceneNode::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
 	glm::vec3 pos = glm::vec3(0, 0, 0);
 	glm::vec3 n = glm::vec3(0, 0, 0);
 	double t = 0;
+	glm::vec3 kd;
+	glm::vec3 ks;
+	float shininess;
 	for(std::list<SceneNode*>::iterator it = children.begin(); it != children.end(); ++it) {
 		Intersect i = (*it)->intersect(rayDir, rayPos);
 		if (i.hit && !hit) {
@@ -147,14 +150,20 @@ Intersect SceneNode::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
 			pos = i.pos;
 			n = i.n;
 			t = i.t;
+			kd = i.kd;
+			ks = i.ks;
+			shininess = i.shininess;
 		}
 		else if (i.hit && hit && i.t < t) {
 			pos = i.pos;
 			n = i.n;
 			t = i.t;
+			kd = i.kd;
+                        ks = i.ks;
+                        shininess = i.shininess;
 		}
 	}
-	return Intersect(pos, n, hit, t);
+	return Intersect(pos, n, hit, t, kd, ks, shininess);
 }
 				
 			

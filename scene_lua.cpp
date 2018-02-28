@@ -365,7 +365,7 @@ int gr_material_cmd(lua_State* L)
 
   double shininess = luaL_checknumber(L, 3);
   
-  data->material = new PhongMaterial(glm::vec3(kd[0], kd[1], kd[2]),
+  data->material = new Material(glm::vec3(kd[0], kd[1], kd[2]),
                                      glm::vec3(ks[0], ks[1], ks[2]),
                                      shininess);
 

@@ -1,5 +1,6 @@
 #include "Primitive.hpp"
 #include "polyroots.hpp"
+//#include "helpers.cpp"
 #include <iostream>
 
 using namespace std;
@@ -24,6 +25,16 @@ NonhierSphere::~NonhierSphere()
 {
 }
 
+glm::vec3 getRayPoint(glm::vec3 rayDir, glm::vec3 rayPos, float t) {
+        return (rayDir + (t * rayPos));
+}
+
+glm::vec3 getRaySphereNormal(glm::vec3 rayDir, glm::vec3 rayPos, float t, glm::vec3 centre) {
+        glm::vec3 rayPoint = getRayPoint(rayDir, rayPos, t);
+        return glm::normalize(rayPoint - centre);
+}
+
+
 Intersect NonhierSphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
 //	cout << glm::to_string(rayDir) << " " << glm::to_string(rayPos) << " " << glm::to_string(m_pos) << " " << m_radius << endl;
 
@@ -40,7 +51,7 @@ Intersect NonhierSphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
 	else if (numRoots == 1) {
 //		cout << "1 roots" << endl;
 		double t = roots[0];
-		return Intersect( (rayDir + (t * rayPos)), glm::vec3(0, 0, 0), true, t);
+		return Intersect( getRayPoint(rayDir, rayPos, (float)t), getRaySphereNormal(rayDir, rayPos, (float)t, m_pos), true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0 );
 	}
 	else if (numRoots == 2) {
 //		cout << "2 roots" << endl;
@@ -51,7 +62,7 @@ Intersect NonhierSphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
 		else {
 			t = roots[1];
 		}
-		return Intersect( (rayDir + ((float)t * rayPos)), glm::vec3(0, 0, 0), true, t);
+		return Intersect( getRayPoint(rayDir, rayPos, (float)t), getRaySphereNormal(rayDir, rayPos, (float)t, m_pos), true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0 );
 	}
 	else {
 		cerr <<"nonhier sphere does not have 0 1 2 roots" << endl;
