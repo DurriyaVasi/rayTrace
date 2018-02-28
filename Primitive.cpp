@@ -13,7 +13,7 @@ Intersect Primitive::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
 }
 
 glm::vec3 getRayPoint(glm::vec3 rayDir, glm::vec3 rayPos, float t) {
-        return (rayDir + (t * rayPos));
+        return (rayPos + (t * rayDir));
 }
 
 glm::vec3 getRaySphereNormal(glm::vec3 rayDir, glm::vec3 rayPos, float t, glm::vec3 centre) {

@@ -43,6 +43,22 @@ glm::vec3 multiply(glm::vec3 vecA, glm::vec3 vecB) {
         return vecC;
 }
 
+float capFloat(float f) {
+	if (f > 1) {
+		f = 1;
+	}
+	else if (f < 0) {
+		f = 0;
+	}
+	return f;
+}
+
+glm::vec3 capColour(glm::vec3 c) {
+	c[0] = capFloat(c[0]);
+	c[1] = capFloat(c[1]);
+	c[2] = capFloat(c[2]);
+	return c;
+}
 
 void A4_Render(
 		// What to render
@@ -115,7 +131,7 @@ void A4_Render(
                                                   || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;
                         }
 			else {
-			/*
+			
 				 glm::vec3 colour = glm::vec3(0, 0, 0);
                                 glm::vec3 kd = intersect.kd;
                                 glm::vec3 ks = intersect.ks;
@@ -137,6 +153,7 @@ void A4_Render(
 
 					//glm::vec3 lightHitDir = intersect.pos - light->position;
 					glm::vec3 lightHitDir = lightDir;
+					lightHitDir = glm::normalize(lightHitDir);
 
                                         if(!iLight.hit || (!(glm::length(iLight.pos - intersect.pos) < (glm::length(lightDir) - 0.01)))) {
                                                 lightHits = true;
@@ -159,12 +176,13 @@ void A4_Render(
 						colour = colour + (phong * multiply(ks, light->colour));
 					}
 				}
+				colour = capColour(colour);
 				image(x, y, 0) = colour[0];
 				image(x, y, 1) = colour[1];
-				image(x, y, 2) = colour[2];	*/	
-				image (x, y, 0) = 1;
+				image(x, y, 2) = colour[2];		
+				/*image (x, y, 0) = 1;
         	                image(x, y, 1) = 1;
-	                        image (x, y, 2) = 1;
+	                        image (x, y, 2) = 1;*/
 
                           }
 			
