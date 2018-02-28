@@ -46,3 +46,8 @@ std::ostream& operator<<(std::ostream& out, const Mesh& mesh)
   out << "}";
   return out;
 }
+
+Intersect Mesh::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
+	return Primitive::intersectPolygon(rayDir, rayPos, m_vertices, m_faces);
+}
+
