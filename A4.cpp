@@ -60,6 +60,11 @@ glm::vec3 capColour(glm::vec3 c) {
 	return c;
 }
 
+glm::vec3 switchXY(glm::vec3 v) {
+	v[0] = v[0] * -1;
+	v[1] = v[1] * -1;
+}
+
 void A4_Render(
 		// What to render
 		SceneNode * root,
@@ -144,11 +149,13 @@ void A4_Render(
                                 colour = colour + multiply(kd, ambient);
 
                                 for(const Light * light : lights) {
-
+					
                                         bool lightHits = false;
+					//lightHits = true;
 
                                         glm::vec3 lightPos = intersect.pos;
                                         glm::vec3 lightDir = light->position - intersect.pos;
+					//glm::vec3 lightDir = intersect.pos - light->position;
                                         Intersect iLight = root->intersect(lightDir, lightPos);
 
 					//glm::vec3 lightHitDir = intersect.pos - light->position;
@@ -162,7 +169,7 @@ void A4_Render(
 					//	std::cout << glm::to_string(colour) << " " << glm::to_string(kd) << " " << glm::to_string(ambient) << std::endl;
 
 						float lambertDirectLight = glm::dot(lightHitDir, intersect.n);
-						colour = colour + (lambertDirectLight * multiply(kd, light->colour));
+						colour = colour + capColour((lambertDirectLight * multiply(kd, light->colour)));
 						
 					//	std::cout << glm::to_string(colour) << " " << glm::to_string(kd) << " " << glm::to_string(light->colour) << " " << lambertDirectLight << std::endl;
 
