@@ -140,7 +140,7 @@ Intersect Primitive::intersectTriangle(glm::vec3 rayDir, glm::vec3 rayPos, glm::
 	float B = d1/d;
 	float A = d2/d;
 	float t = d3/d;
-	if ((B > 0) && (A > 0) && ((B + A) < 1)) {
+	if (((B + 0.001) > 0) && ((A + 0.001) > 0) && ((B + A - 0.001) < 1)) {
  		glm::vec3 pos = getRayPoint(rayDir, rayPos, t);
 		glm::vec3 normal = glm::normalize(glm::cross( (p3-p2), (p1-p2) ));
 		return Intersect(pos, normal, true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0);
@@ -227,10 +227,30 @@ Intersect NonhierSphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4
 Intersect Sphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
 	rayDir = transformVector(rayDir, glm::inverse(trans));
 	rayPos = transformPoint(rayPos, glm::inverse(trans));
-	Intersect intersect = getSphereIntersect(glm::vec3(0, 0, 0), 0.5, rayDir, rayPos);	
-	return Intersect(transformPoint(intersect.pos, trans), transformPoint(intersect.n, glm::transpose(glm::inverse(trans))), intersect.t, true, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0); 
+	Intersect intersect = getSphereIntersect(glm::vec3(0, 0, 0), 0.5, rayDir, rayPos);
+	if (intersect.hit) {	
+		return Intersect(transformPoint(intersect.pos, trans), transformPoint(intersect.n, glm::transpose(glm::inverse(trans))), intersect.t, true, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0); 
+	}
+	else {
+		return Intersect();
+	}
 }
+
 	
+
+/*Intersect Cylinder::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
+	glm:vec3 vA = glm::vec3(0, 0, 1);
+	float vDva = (glm::dot(rayDir, vA));
+	glm::vec3 deltaP = rayPos - m_pos; // define m_pos
+	float pDv = glm::dot(deltaP, vA);
+	float A = (rayDir - (vDva * vA));
+	A = A * A;
+	float B = 2 * glm::dot((rayDir - (vDva * vA)), deltaP - (pDv * vA));
+	float C = (deltaP - (pDv * vA));
+	C = C * C;
+	C = C - ((m_radius) * m_radius);
+		
+}*/
 
 NonhierBox::~NonhierBox()
 {
