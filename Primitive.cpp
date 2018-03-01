@@ -228,7 +228,7 @@ Intersect Sphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans)
 	rayDir = transformVector(rayDir, glm::inverse(trans));
 	rayPos = transformPoint(rayPos, glm::inverse(trans));
 	Intersect intersect = getSphereIntersect(glm::vec3(0, 0, 0), 0.5, rayDir, rayPos);	
-	return Intersect(transformPoint(intersect.pos, trans), transformPoint(intersect.pos, trans), intersect.t, true, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0); 
+	return Intersect(transformPoint(intersect.pos, trans), transformPoint(intersect.n, glm::transpose(glm::inverse(trans))), intersect.t, true, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0); 
 }
 	
 
@@ -241,6 +241,7 @@ Intersect NonhierBox::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 tr
 }
 
 Intersect Cube::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
+	cout << "intersect cube" << endl;
 	std::vector<glm::vec3> transformedVertices;
 	for(std::vector<glm::vec3>::iterator it = m_vertices.begin(); it != m_vertices.end(); ++it) {
 		transformedVertices.push_back(transformPoint(*it, trans));

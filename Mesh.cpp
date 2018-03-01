@@ -6,6 +6,12 @@
 // #include "cs488-framework/ObjFileDecoder.hpp"
 #include "Mesh.hpp"
 
+glm::vec3 transformPoint1(glm::vec3 v, glm::mat4 trans) {
+        glm::vec4 v4 = glm::vec4(v[0], v[1], v[2], 1);
+        v4 = trans * v4;
+        return glm::vec3(v4[0], v4[1], v4[2]);
+}
+
 Mesh::Mesh( const std::string& fname )
 	: m_vertices()
 	, m_faces()
@@ -48,6 +54,10 @@ std::ostream& operator<<(std::ostream& out, const Mesh& mesh)
 }
 
 Intersect Mesh::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
-	return Primitive::intersectPolygon(rayDir, rayPos, m_vertices, m_faces);
+	std::vector<glm::vec3> transformedVertices;
+        for(std::vector<glm::vec3>::iterator it = m_vertices.begin(); it != m_vertices.end(); ++it) {
+                transformedVertices.push_back(transformPoint1(*it, trans));
+        }
+	return Primitive::intersectPolygon(rayDir, rayPos, transformedVertices, m_faces);
 }
 
