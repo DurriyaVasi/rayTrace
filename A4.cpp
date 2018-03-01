@@ -191,24 +191,31 @@ void A4_Render(
                                 for(const Light * light : lights) {
 					
                                         bool lightHits = false;
-					lightHits = true;
+					//lightHits = true;
 
-                                        glm::vec3 lightPos = intersect.pos;
-                                        glm::vec3 lightDir = light->position - intersect.pos;
-					//glm::vec3 lightDir = intersect.pos - light->position;
+                                        //glm::vec3 lightPos = intersect.pos;
+                                        //glm::vec3 lightDir = light->position - intersect.pos;
+					glm::vec3 lightDir = intersect.pos - light->position;
+					glm::vec3 lightPos = light->position;
                                         Intersect iLight = root->intersect(lightDir, lightPos);
 
 				//	glm::vec3 lightHitDir = intersect.pos - light->position;
-					glm::vec3 lightHitDir = lightDir;
+			//		glm::vec3 lightHitDir = lightDir;
+					glm::vec3 lightHitDir = light->position - intersect.pos;
 					lightHitDir = glm::normalize(lightHitDir);
 
-					if(iLight.hit) {
-			//			std::cout << glm::to_string(light->position) << " " << glm::to_string(intersect.pos) << " " << glm::to_string(iLight.pos) << std::endl;
+
+					if ((!iLight.hit) || (iLight.hit && (glm::length(iLight.pos - intersect.pos) < 0.01))) {
+						lightHits = true;
 					}
 
-                                        if(!iLight.hit || (!(glm::length(iLight.pos - intersect.pos) < (glm::length(lightDir) - 0.01)))) {
+	/*				if(iLight.hit) {
+						std::cout << glm::to_string(light->position) << " " << glm::to_string(intersect.pos) << " " << glm::to_string(iLight.pos) << std::endl;
+					}
+
+                                        if(!iLight.hit || (!(glm::length(iLight.pos - intersect.pos) < (glm::length(lightDir) - 0.01))) || (iLight.hit && (glm::length(iLight.pos - intersect.pos) < 1))) {
                                                 lightHits = true;
-                                        }
+                                        }*/
 					if (lightHits && (!vecIs0(kd))) {
 					//	std::cout << glm::to_string(colour) << " " << glm::to_string(kd) << " " << glm::to_string(ambient) << std::endl;
 
