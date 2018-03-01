@@ -69,6 +69,13 @@ glm::vec3 switchZ(glm::vec3 v) {
 	v[2] = v[2] * -1;
 }
 
+void createGraph(SceneNode * root) {
+	for (std::list<SceneNode*>::iterator it = root->children.begin(); it != root->children.end(); ++it) {
+		(*it)->set_transform((root->trans) * ((*it)->trans));
+		createGraph(*it);
+	}
+}
+
 void A4_Render(
 		// What to render
 		SceneNode * root,
@@ -105,6 +112,8 @@ void A4_Render(
 
 	size_t h = image.height();
 	size_t w = image.width();
+
+	createGraph(root);
 
 	glm::vec3 camDir = glm::normalize(view); //w
         glm::vec3 camRight = glm::normalize(glm::cross(up, camDir)); //u

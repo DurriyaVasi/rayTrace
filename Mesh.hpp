@@ -12,7 +12,7 @@
 class Mesh : public Primitive {
 public:
   Mesh( const std::string& fname );
-  virtual Intersect intersect(glm::vec3 rayDir, glm::vec3 rayPos);  
+  virtual Intersect intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans);  
 
 private:
 	std::vector<glm::vec3> m_vertices;

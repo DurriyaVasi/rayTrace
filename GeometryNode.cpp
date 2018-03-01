@@ -27,7 +27,7 @@ void GeometryNode::setMaterial( Material *mat )
 }
 
 Intersect GeometryNode::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
-        Intersect i = m_primitive->intersect(rayDir, rayPos);
+        Intersect i = m_primitive->intersect(rayDir, rayPos, trans);
 	i.kd = m_material->kd;
 	i.ks = m_material->ks;
 	i.shininess = m_material->shininess;

@@ -8,7 +8,66 @@ Primitive::~Primitive()
 {
 }
 
-Intersect Primitive::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
+void Primitive::createInitCube(glm::vec3 m_pos, double m_size, std::vector<glm::vec3> &m_vertices, std::vector<Triangle> &m_faces) {
+        float fSize = (float)m_size/2;
+        float nSize = fSize * -1;
+/*      m_vertices.push_back(pos + glm::vec3(nSize, size, nSize));
+        m_vertices.push_back(pos + glm::vec3(size, size, nSize));
+        m_vertices.push_back(pos + glm::vec3(size, size, size));
+        m_vertices.push_back(pos + glm::vec3(nSize, size, size));
+        m_vertices.push_back(pos + glm::vec3(nSize, nSize, nSize));
+        m_vertices.push_back(pos + glm::vec3(size, nSize, nSize));
+        m_vertices.push_back(pos + glm::vec3(size, nSize, size));
+        m_vertices.push_back(pos + glm::vec3(nSize, nSize, size));
+        m_faces.push_back(Triangle(0, 1, 3));
+        m_faces.push_back(Triangle(1, 2, 3));
+        m_faces.push_back(Triangle(4, 7, 5));
+        m_faces.push_back(Triangle(5, 6, 7));
+        m_faces.push_back(Triangle(0, 3, 7));
+        m_faces.push_back(Triangle(0, 4, 7));
+        m_faces.push_back(Triangle(1, 5, 6));
+        m_faces.push_back(Triangle(1, 2, 6));
+        m_faces.push_back(Triangle(3, 2, 6));
+        m_faces.push_back(Triangle(3, 7, 6));
+        m_faces.push_back(Triangle(0, 1, 5));
+        m_faces.push_back(Triangle(0, 4, 5));*/
+        float size1 = (float)m_size;
+        m_vertices.push_back(m_pos + glm::vec3(0, 0, size1));
+        m_vertices.push_back(m_pos + glm::vec3(size1, 0, size1));
+        m_vertices.push_back(m_pos + glm::vec3(size1, size1, size1));
+        m_vertices.push_back(m_pos + glm::vec3(0, size1, size1));
+        m_vertices.push_back(m_pos + glm::vec3(0, 0, 0));
+        m_vertices.push_back(m_pos + glm::vec3(size1, 0, 0));
+        m_vertices.push_back(m_pos + glm::vec3(size1, size1, 0));
+        m_vertices.push_back(m_pos + glm::vec3(0, size1, 0));
+        m_faces.push_back(Triangle(2, 3, 0));
+        m_faces.push_back(Triangle(0, 1, 3));
+        m_faces.push_back(Triangle(2, 1, 5));
+        m_faces.push_back(Triangle(5, 6, 2));
+        m_faces.push_back(Triangle(3, 7, 4));
+        m_faces.push_back(Triangle(4, 0, 3));
+        m_faces.push_back(Triangle(7, 6, 5));
+        m_faces.push_back(Triangle(5, 4, 7));
+        m_faces.push_back(Triangle(1, 0, 4));
+        m_faces.push_back(Triangle(4, 5, 1));
+        m_faces.push_back(Triangle(2, 6, 7));
+        m_faces.push_back(Triangle(7, 3, 2));
+}
+
+
+glm::vec3 transformPoint(glm::vec3 v, glm::mat4 trans) {
+	glm::vec4 v4 = glm::vec4(v[0], v[1], v[2], 1);
+	v4 = trans * v4;
+	return glm::vec3(v4[0], v4[1], v4[2]);
+}
+
+glm::vec3 transformVector(glm::vec3 v, glm::mat4 trans) {
+	glm::vec4 v4 = glm::vec4(v[0], v[1], v[2], 0);
+        v4 = trans * v4;
+        return glm::vec3(v4[0], v4[1], v4[2]);
+}
+
+Intersect Primitive::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
 	return Intersect();
 }
 
@@ -128,45 +187,64 @@ NonhierSphere::~NonhierSphere()
 {
 }
 
-Intersect NonhierSphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
-//	cout << glm::to_string(rayDir) << " " << glm::to_string(rayPos) << " " << glm::to_string(m_pos) << " " << m_radius << endl;
-
+Intersect getSphereIntersect(glm::vec3 m_pos, double m_radius, glm::vec3 rayDir, glm::vec3 rayPos) {
+	double roots[2];
 	glm::vec3 aMc = rayPos - m_pos;
 	float A = glm::dot(rayDir, rayDir);
-	float B = 2 * glm::dot(rayDir, aMc);
-	float C = glm::dot(aMc, aMc)- ((float)m_radius * (float)m_radius);
-	double roots[2];
+        float B = 2 * glm::dot(rayDir, aMc);
+        float C = glm::dot(aMc, aMc)- ((float)m_radius * (float)m_radius);
 	size_t numRoots = quadraticRoots((double)A, (double)B, (double)C, roots);
-	if (numRoots == 0) {
-//		cout << "no roots" << endl;
-		return Intersect();
-	}
-	else if (numRoots == 1) {
-//		cout << "1 roots" << endl;
-		double t = roots[0];
-		return Intersect( getRayPoint(rayDir, rayPos, (float)t), getRaySphereNormal(rayDir, rayPos, (float)t, m_pos), true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0 );
-	}
-	else if (numRoots == 2) {
-//		cout << "2 roots" << endl;
-		double t;
-		if (roots[0] < roots[1]) {
-			t = roots[0];
-		}
-		else {
-			t = roots[1];
-		}
-		return Intersect( getRayPoint(rayDir, rayPos, (float)t), getRaySphereNormal(rayDir, rayPos, (float)t, m_pos), true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0 );
-	}
-	else {
-		cerr <<"nonhier sphere does not have 0 1 2 roots" << endl;
-	}
+        if (numRoots == 0) {
+//              cout << "no roots" << endl;
+                return Intersect();
+        }
+        else if (numRoots == 1) {
+//              cout << "1 roots" << endl;
+                double t = roots[0];
+                return Intersect( getRayPoint(rayDir, rayPos, (float)t), getRaySphereNormal(rayDir, rayPos, (float)t, m_pos), true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0 );
+        }
+        else if (numRoots == 2) {
+//              cout << "2 roots" << endl;
+                double t;
+                if (roots[0] < roots[1]) {
+                        t = roots[0];
+                }
+                else {
+                        t = roots[1];
+                }
+                return Intersect( getRayPoint(rayDir, rayPos, (float)t), getRaySphereNormal(rayDir, rayPos, (float)t, m_pos), true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0 );
+        }
+        else {
+                cerr <<"nonhier sphere does not have 0 1 2 roots" << endl;
+        }
 }
+
+Intersect NonhierSphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
+//	cout << glm::to_string(rayDir) << " " << glm::to_string(rayPos) << " " << glm::to_string(m_pos) << " " << m_radius << endl;
+	return getSphereIntersect(m_pos, m_radius, rayDir, rayPos);
+}
+
+Intersect Sphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
+	rayDir = transformVector(rayDir, glm::inverse(trans));
+	rayPos = transformPoint(rayPos, glm::inverse(trans));
+	Intersect intersect = getSphereIntersect(glm::vec3(0, 0, 0), 0.5, rayDir, rayPos);	
+	return Intersect(transformPoint(intersect.pos, trans), transformPoint(intersect.pos, trans), intersect.t, true, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0); 
+}
+	
 
 NonhierBox::~NonhierBox()
 {
 }
 
-Intersect NonhierBox::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
+Intersect NonhierBox::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
 	return Primitive::intersectPolygon(rayDir, rayPos, m_vertices, m_faces);
 }
 
+Intersect Cube::intersect(glm::vec3 rayDir, glm::vec3 rayPos, glm::mat4 trans) {
+	std::vector<glm::vec3> transformedVertices;
+	for(std::vector<glm::vec3>::iterator it = m_vertices.begin(); it != m_vertices.end(); ++it) {
+		transformedVertices.push_back(transformPoint(*it, trans));
+	}
+	return Primitive::intersectPolygon(rayDir, rayPos, transformedVertices, m_faces);
+}
+		
