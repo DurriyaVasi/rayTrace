@@ -150,12 +150,12 @@ void A4_Render(
 				//	std::cout << glm::to_string(kd) << " " << glm::to_string(ks) << " " << shininess << " " << glm::to_string(ambient) << std::endl;
 				//}				
 
-                                colour = colour + capColour(multiply(kd, ambient));
+                                colour = colour + multiply(kd, ambient);
 
                                 for(const Light * light : lights) {
 					
                                         bool lightHits = false;
-					//lightHits = true;
+					lightHits = true;
 
                                         glm::vec3 lightPos = intersect.pos;
                                         glm::vec3 lightDir = light->position - intersect.pos;
@@ -177,8 +177,9 @@ void A4_Render(
 					//	std::cout << glm::to_string(colour) << " " << glm::to_string(kd) << " " << glm::to_string(ambient) << std::endl;
 
 						float lambertDirectLight = glm::dot(lightHitDir, intersect.n);
-						colour = colour + capColour((lambertDirectLight * multiply(kd, light->colour)));
-						
+						if (lambertDirectLight > 0) {
+							colour = colour + (lambertDirectLight * multiply(kd, light->colour));
+						}
 					//	std::cout << glm::to_string(colour) << " " << glm::to_string(kd) << " " << glm::to_string(light->colour) << " " << lambertDirectLight << std::endl;
 
 					//	std::cout << glm::to_string(multiply(kd, light->colour)) << " " << glm::to_string(lambertDirectLight * multiply(kd, light->colour)) << " " << glm::to_string(lambertDirectLight * glm::vec3(1, 1, 1)) << std::endl;
@@ -188,7 +189,9 @@ void A4_Render(
                                                 glm::vec3 reflectPos = intersect.pos;
                                                 glm::vec3 reflectDir =  lightHitDir - (2 * (glm::dot(glm::normalize(lightHitDir), intersect.n)) * intersect.n);
 						float phong = std::pow(glm::dot(reflectDir, view), shininess);
-						colour = colour + capColour((phong * multiply(ks, light->colour)));
+						if ((!(glm::dot(glm::normalize(lightHitDir), intersect.n) < 0)) && (glm::dot(reflectDir, view) > 0)) {
+							colour = colour + (phong * multiply(ks, light->colour));
+						}
 					}
 				}
 				colour = capColour(colour);

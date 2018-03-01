@@ -83,7 +83,7 @@ Intersect Primitive::intersectTriangle(glm::vec3 rayDir, glm::vec3 rayPos, glm::
 	float t = d3/d;
 	if ((B > 0) && (A > 0) && ((B + A) < 1)) {
  		glm::vec3 pos = getRayPoint(rayDir, rayPos, t);
-		glm::vec3 normal = glm::normalize(glm::cross( (p3-p1), (p2-p1) ));
+		glm::vec3 normal = glm::normalize(glm::cross( (p3-p2), (p1-p2) ));
 		return Intersect(pos, normal, true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0);
 	}
 	else {
