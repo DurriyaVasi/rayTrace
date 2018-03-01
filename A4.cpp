@@ -7,8 +7,8 @@
 
 glm::vec3 getRayDir(glm::vec3 eye, glm::vec3 screenPoint, float w, float h, float wWindow, float hWindow, glm::vec3 camRight, glm::vec3 camUp, glm::vec3 camDir) {
         glm::vec3 rayDir = screenPoint + (glm::vec3(-1 * w/2, -1 * h/2, 0));
-        rayDir[0] = rayDir[0]*(-1 * wWindow/w);
-        rayDir[1] = rayDir[1]*(-1 * hWindow/h);
+        rayDir[0] = rayDir[0]*(wWindow/w);
+        rayDir[1] = rayDir[1]*(hWindow/h);
 
         rayDir = eye + (rayDir[0] * camRight) + (rayDir[1] * camUp) + (rayDir[2] * camDir);
         rayDir = rayDir - eye;
@@ -63,6 +63,10 @@ glm::vec3 capColour(glm::vec3 c) {
 glm::vec3 switchXY(glm::vec3 v) {
 	v[0] = v[0] * -1;
 	v[1] = v[1] * -1;
+}
+
+glm::vec3 switchZ(glm::vec3 v) {
+	v[2] = v[2] * -1;
 }
 
 void A4_Render(
@@ -128,11 +132,11 @@ void A4_Render(
 
 			if (!intersect.hit) {
                                 // Red: increasing from top to bottom
-                                image(x, y, 0) = (double)y / h;
+                                image((w - x - 1), (h - y - 1), 0) = (double)y / h;
                                 // Green: increasing from left to right
-                                image(x, y, 1) = (double)x / w;
+                                image((w - x - 1), (h - y - 1), 1) = (double)x / w;
                                 // Blue: in lower-left and upper-right corners
-                                image(x, y, 2) = ((y < h/2 && x < w/2)
+                                image((w - x - 1), (h - y - 1), 2) = ((y < h/2 && x < w/2)
                                                   || (y >= h/2 && x >= w/2)) ? 1.0 : 0.0;
                         }
 			else {
@@ -146,7 +150,7 @@ void A4_Render(
 				//	std::cout << glm::to_string(kd) << " " << glm::to_string(ks) << " " << shininess << " " << glm::to_string(ambient) << std::endl;
 				//}				
 
-                                colour = colour + multiply(kd, ambient);
+                                colour = colour + capColour(multiply(kd, ambient));
 
                                 for(const Light * light : lights) {
 					
@@ -158,9 +162,13 @@ void A4_Render(
 					//glm::vec3 lightDir = intersect.pos - light->position;
                                         Intersect iLight = root->intersect(lightDir, lightPos);
 
-					//glm::vec3 lightHitDir = intersect.pos - light->position;
+				//	glm::vec3 lightHitDir = intersect.pos - light->position;
 					glm::vec3 lightHitDir = lightDir;
 					lightHitDir = glm::normalize(lightHitDir);
+
+					if(iLight.hit) {
+						std::cout << glm::to_string(light->position) << " " << glm::to_string(intersect.pos) << " " << glm::to_string(iLight.pos) << std::endl;
+					}
 
                                         if(!iLight.hit || (!(glm::length(iLight.pos - intersect.pos) < (glm::length(lightDir) - 0.01)))) {
                                                 lightHits = true;
@@ -180,16 +188,17 @@ void A4_Render(
                                                 glm::vec3 reflectPos = intersect.pos;
                                                 glm::vec3 reflectDir =  lightHitDir - (2 * (glm::dot(glm::normalize(lightHitDir), intersect.n)) * intersect.n);
 						float phong = std::pow(glm::dot(reflectDir, view), shininess);
-						colour = colour + (phong * multiply(ks, light->colour));
+						colour = colour + capColour((phong * multiply(ks, light->colour)));
 					}
 				}
 				colour = capColour(colour);
-				image(x, y, 0) = colour[0];
-				image(x, y, 1) = colour[1];
-				image(x, y, 2) = colour[2];		
-				/*image (x, y, 0) = 1;
-        	                image(x, y, 1) = 1;
-	                        image (x, y, 2) = 1;*/
+				image((w - x - 1), (h - y- 1), 0) = colour[0];
+				image((w - x - 1), (h - y - 1), 1) = colour[1];
+				image((w - x - 1), (h - y - 1), 2) = colour[2];		
+			/*	image((w - x - 1), (h - y - 1), 0) = 1;
+                                image((w - x - 1), (h - y - 1), 1) = 1;
+                                image((w - x - 1), (h - y - 1), 2) = 1;*/
+
 
                           }
 			

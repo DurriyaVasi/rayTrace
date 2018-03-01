@@ -83,7 +83,7 @@ Intersect Primitive::intersectTriangle(glm::vec3 rayDir, glm::vec3 rayPos, glm::
 	float t = d3/d;
 	if ((B > 0) && (A > 0) && ((B + A) < 1)) {
  		glm::vec3 pos = getRayPoint(rayDir, rayPos, t);
-		glm::vec3 normal = glm::normalize(glm::cross( (p3-p2), (p1-p2) ));
+		glm::vec3 normal = glm::normalize(glm::cross( (p3-p1), (p2-p1) ));
 		return Intersect(pos, normal, true, t, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), 0);
 	}
 	else {
@@ -134,7 +134,7 @@ Intersect NonhierSphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
 	glm::vec3 aMc = rayPos - m_pos;
 	float A = glm::dot(rayDir, rayDir);
 	float B = 2 * glm::dot(rayDir, aMc);
-	float C = glm::dot(aMc, aMc)- (m_radius * m_radius);
+	float C = glm::dot(aMc, aMc)- ((float)m_radius * (float)m_radius);
 	double roots[2];
 	size_t numRoots = quadraticRoots((double)A, (double)B, (double)C, roots);
 	if (numRoots == 0) {
@@ -149,7 +149,7 @@ Intersect NonhierSphere::intersect(glm::vec3 rayDir, glm::vec3 rayPos) {
 	else if (numRoots == 2) {
 //		cout << "2 roots" << endl;
 		double t;
-		if (roots[0] > roots[1]) {
+		if (roots[0] < roots[1]) {
 			t = roots[0];
 		}
 		else {
